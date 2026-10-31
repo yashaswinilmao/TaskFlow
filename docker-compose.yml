@@ -1,0 +1,14 @@
+services:
+  taskflow:
+    build: .
+    container_name: taskflow
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: "replace-this-with-a-long-random-secret"
+      DATABASE_URL: "sqlite:////app/instance/taskflow.db"
+    volumes:
+      - taskflow_data:/app/instance
+    restart: unless-stopped
+volumes:
+  taskflow_data:

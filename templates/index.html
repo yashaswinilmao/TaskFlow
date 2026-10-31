@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My tasks · TaskFlow{% endblock %}
+{% block content %}
+<section class="hero">
+  <div><div class="eyebrow">YOUR SPACE, YOUR PACE</div><h1>Make today<br><span>count.</span></h1>
+  <p class="muted">A little progress every day adds up to big results.</p></div>
+  <div class="hero-stats"><div><strong>{{ total }}</strong><span>Total tasks</span></div><div><strong>{{ completed_count }}</strong><span>Completed</span></div>
+    <div class="progress"><div style="width: {{ (completed_count / total * 100) if total else 0 }}%"></div></div>
+  </div>
+</section>
+<section class="content-grid">
+  <div class="panel add-panel">
+    <div class="panel-heading"><div><div class="eyebrow">GET IT OUT OF YOUR HEAD</div><h2>Add a task</h2></div><span class="plus">＋</span></div>
+    <form method="post" action="{{ url_for('create_task') }}" class="stack-form">
+      <label>Task title<input name="title" maxlength="160" required placeholder="What needs to get done?"></label>
+      <label>Description <span class="optional">· optional</span><textarea name="description" rows="3" placeholder="Add a few details..."></textarea></label>
+      <div class="form-row">
+        <label>Priority<select name="priority"><option>Low</option><option selected>Medium</option><option>High</option></select></label>
+        <label>Due date<input type="date" name="due_date"></label>
+      </div>
+      <button class="primary" type="submit">Add to my list <span>→</span></button>
+    </form>
+  </div>
+  <div class="tasks-area">
+    <div class="tasks-heading"><div><div class="eyebrow">THE GAME PLAN</div><h2>Your tasks</h2></div><span class="task-count">{{ tasks|length }} shown</span></div>
+    <form class="toolbar" method="get" action="{{ url_for('index') }}">
+      <input name="q" value="{{ search }}" placeholder="Search tasks...">
+      <select name="status" aria-label="Filter tasks"><option value="all" {{ 'selected' if status == 'all' }}>All</option><option value="active" {{ 'selected' if status == 'active' }}>Active</option><option value="completed" {{ 'selected' if status == 'completed' }}>Completed</option></select>
+      <button class="filter-button" type="submit">Filter</button>
+    </form>
+    <div class="task-list">
+      {% for task in tasks %}
+      <article class="task-card {{ 'is-done' if task.completed }}">
+        <form method="post" action="{{ url_for('toggle_task', task_id=task.id) }}"><button class="check" aria-label="Toggle task" title="Mark {{ 'active' if task.completed else 'complete' }}">{{ '✓' if task.completed else '' }}</button></form>
+        <div class="task-main"><div class="task-title">{{ task.title }}</div>
+          {% if task.description %}<p>{{ task.description }}</p>{% endif %}
+          <div class="task-meta"><span class="priority {{ task.priority|lower }}">{{ task.priority }} priority</span>{% if task.due_date %}<span>◷ {{ task.due_date.strftime('%d %b %Y') }}</span>{% endif %}</div>
+        </div>
+        <details class="task-actions"><summary aria-label="Task actions">•••</summary>
+          <form method="post" action="{{ url_for('edit_task', task_id=task.id) }}" class="edit-form">
+            <input name="title" value="{{ task.title }}" required aria-label="Task title">
+            <input name="description" value="{{ task.description }}" aria-label="Description">
+            <select name="priority"><option {{ 'selected' if task.priority == 'Low' }}>Low</option><option {{ 'selected' if task.priority == 'Medium' }}>Medium</option><option {{ 'selected' if task.priority == 'High' }}>High</option></select>
+            <input type="date" name="due_date" value="{{ task.due_date.isoformat() if task.due_date else '' }}">
+            <button class="small-button" type="submit">Save changes</button>
+          </form>
+          <form method="post" action="{{ url_for('delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?')"><button class="delete-button" type="submit">Delete task</button></form>
+        </details>
+      </article>
+      {% else %}
+      <div class="empty-state"><div class="empty-icon">✦</div><h3>Nothing on your list yet</h3><p>Add your first task and make the day yours.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

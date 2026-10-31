@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Create account' if mode == 'register' else 'Welcome back' }} · TaskFlow{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <div class="eyebrow">YOUR PERSONAL PRODUCTIVITY SPACE</div>
+  <h1>{{ 'Create your account' if mode == 'register' else 'Welcome back' }}<span>.</span></h1>
+  <p class="muted">{{ 'A clearer day starts with a simple plan.' if mode == 'register' else 'Pick up where you left off.' }}</p>
+  <form method="post" class="stack-form">
+    <label>Username<input name="username" required minlength="3" autocomplete="username" placeholder="e.g. yashwi"></label>
+    <label>Password<input type="password" name="password" required minlength="6" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" placeholder="At least 6 characters"></label>
+    <button class="primary full" type="submit">{{ 'Create account' if mode == 'register' else 'Log in' }} <span>→</span></button>
+  </form>
+  <p class="switch-auth">{{ 'Already have an account?' if mode == 'register' else 'New to TaskFlow?' }}
+    <a href="{{ url_for('login' if mode == 'register' else 'register') }}">{{ 'Log in' if mode == 'register' else 'Create an account' }}</a>
+  </p>
+</section>
+{% endblock %}
